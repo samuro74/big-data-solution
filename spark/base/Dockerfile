@@ -1,7 +1,7 @@
-ARG debian_buster_image_tag=8-jre-slim
+ARG debian_buster_image_tag=11.0.11-jre-slim
 FROM openjdk:${debian_buster_image_tag}
 
-ARG scala_version="2.12.10"
+ARG scala_version="2.13.16"
 ARG build_date
 ARG shared_workspace=/opt/workspace
 
@@ -10,7 +10,7 @@ RUN mkdir -p /usr/share/man/man1
 RUN apt-get update -y
 RUN apt-get install -y curl python3 r-base
 RUN ln -s /usr/bin/python3 /usr/bin/python
-RUN curl https://downloads.lightbend.com/scala/2.12.10/scala-${scala_version}.deb -k -o scala.deb
+RUN curl https://downloads.lightbend.com/scala/2.13.16/scala-${scala_version}.deb -k -o scala.deb
 RUN apt install -y ./scala.deb
 RUN rm -rf scala.deb /var/lib/apt/lists/*
 
@@ -21,8 +21,8 @@ ENV SHARED_WORKSPACE=${shared_workspace}
 VOLUME ${shared_workspace}
 CMD ["bash"]
 
-ARG spark_version="3.0.0"
-ARG hadoop_version="3.2"
+ARG spark_version="3.5.5"
+ARG hadoop_version="3"
 ARG build_date
 
 RUN curl https://archive.apache.org/dist/spark/spark-${spark_version}/spark-${spark_version}-bin-hadoop${hadoop_version}.tgz -o spark.tgz && \
@@ -33,9 +33,9 @@ RUN curl https://archive.apache.org/dist/spark/spark-${spark_version}/spark-${sp
     mkdir /usr/bin/spark-${spark_version}-bin-hadoop${hadoop_version}/logs && \
     rm spark.tgz
 
-ENV SPARK_HOME /usr/bin/spark-${spark_version}-bin-hadoop${hadoop_version}
-ENV SPARK_MASTER_HOST spark-master
-ENV SPARK_MASTER_PORT 7077
-ENV PYSPARK_PYTHON python3
+ENV SPARK_HOME=/usr/bin/spark-${spark_version}-bin-hadoop${hadoop_version}
+ENV SPARK_MASTER_HOST=spark-master
+ENV SPARK_MASTER_PORT=7077
+ENV PYSPARK_PYTHON=python3
 
 WORKDIR ${SPARK_HOME}
