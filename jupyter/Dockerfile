@@ -8,7 +8,7 @@ ARG shared_workspace=/opt/workspace
 RUN mkdir -p ${shared_workspace}/data
 RUN mkdir -p /usr/share/man/man1
 RUN apt-get update -y
-RUN apt-get install -y curl python3 r-base
+RUN apt-get install -y curl python3 procps r-base
 RUN ln -s /usr/bin/python3 /usr/bin/python
 RUN curl https://downloads.lightbend.com/scala/2.13.16/scala-${scala_version}.deb -k -o scala.deb
 RUN apt install -y ./scala.deb
@@ -34,11 +34,7 @@ RUN apt-get update -y
 RUN apt-get install -y python3-pip python3-dev
 RUN pip3 install --upgrade pip
 RUN pip3 install wget==3.2 pyspark==${spark_version} jupyterlab==${jupyterlab_version}
-RUN pip3 install pandas
-RUN pip3 install matplotlib
-RUN pip3 install scipy
-RUN pip3 install scikit-learn
-RUN pip3 install statsmodels
+RUN pip3 install pandas matplotlib scipy scikit-learn statsmodels
 
 #Scala kernel for Spark
 RUN apt-get install -y ca-certificates-java --no-install-recommends
