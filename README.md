@@ -1,13 +1,10 @@
-# BigData Solution written in Python based on Hadoop and Spark.
+# Fork de BigData Solution para actualizar Hadoop, Spark y Scala.
 ### Scale your data management by distributing workload and storage on Hadoop and Spark Clusters, explore and transform your data in Jupyter Notebook.
 
 <!--
 *** Written by Martin Karlsson
 *** www.martinkarlsson.io
 -->
-
-[![LinkedIn][linkedin-shield]][linkedin-url]
-
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
