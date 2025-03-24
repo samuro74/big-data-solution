@@ -34,8 +34,8 @@ RUN apt-get update -y
 RUN apt-get install -y python3-pip python3-dev
 RUN pip3 install --upgrade pip
 RUN pip3 install wget==3.2 pyspark==${spark_version} jupyterlab==${jupyterlab_version}
-RUN pip3 install catboost h2o numpy pandas lightgbm matplotlib optuna pycaret ploty scipy scikit-learn statsmodels xgboost
-RUN pip3 nltk tensorflow
+RUN pip3 install catboost numpy pandas lightgbm matplotlib optuna pycaret plotly scipy
+RUN pip3 install scikit-learn statsmodels nltk
 
 #Scala kernel for Spark
 RUN apt-get install -y ca-certificates-java --no-install-recommends
