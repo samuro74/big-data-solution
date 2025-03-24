@@ -1,7 +1,4 @@
-version: "3.9"
-
-services:
-  ####### HADOOP
+####### HADOOP
   hadoop-namenode:
     container_name: hadoop-namenode
     restart: always
@@ -24,17 +21,22 @@ services:
     build: ./hadoop/datanode
     volumes:
       - hadoop_datanode:/hadoop/dfs/data
+    hostname: localhost #your domain name
+    ports:
+      - 9864:9864
     networks:
      - bds-network
     environment:
       SERVICE_PRECONDITION: "hadoop-namenode:9870"
     env_file:
       - ./hadoop/hadoop.env
-  
+
   hadoop-resourcemanager:
     container_name: hadoop-resourcemanager
     restart: always
     build: ./hadoop/resourcemanager
+    ports:
+      - 8088:8088
     networks:
      - bds-network
     environment:
@@ -46,22 +48,24 @@ services:
     container_name: hadoop-nodemanager-1
     restart: always
     build: ./hadoop/nodemanager
+    ports:
+      - 8042:8042
     networks:
      - bds-network
     environment:
-      SERVICE_PRECONDITION: "hadoop-namenode:9000 hadoop-namenode:9870 hadoop-datanode:9864 hadoop-resourcemanager:8088"
-    env_file:
+      SERVICE_PRECONDITION: "hadoop-namenode:9000 hadoop-namenode:9870 hadoop-datanode:9864 hadoop-resourcemanager:8088"    env_file:
       - ./hadoop/hadoop.env
 
   hadoop-historyserver:
     container_name: hadoop-historyserver
     restart: always
     build: ./hadoop/historyserver
+    ports:
+      - 8188:8188
     networks:
      - bds-network
     environment:
-      SERVICE_PRECONDITION: "hadoop-namenode:9000 hadoop-namenode:9870 hadoop-datanode:9864 hadoop-resourcemanager:8088"
-    volumes:
+      SERVICE_PRECONDITION: "hadoop-namenode:9000 hadoop-namenode:9870 hadoop-datanode:9864 hadoop-resourcemanager:8088"    volumes:
       - hadoop_historyserver:/hadoop/yarn/timeline
     env_file:
       - ./hadoop/hadoop.env
@@ -107,7 +111,7 @@ services:
       - shared-workspace:/opt/workspace
     depends_on:
       - spark-master
-  
+
   ####### JUPYTER
   jupyter-notebook:
     build: ./jupyter
