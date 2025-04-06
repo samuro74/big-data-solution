@@ -1,4 +1,5 @@
-####### HADOOP
+services:
+  ####### HADOOP
   hadoop-namenode:
     container_name: hadoop-namenode
     restart: always
@@ -21,22 +22,17 @@
     build: ./hadoop/datanode
     volumes:
       - hadoop_datanode:/hadoop/dfs/data
-    hostname: localhost #your domain name
-    ports:
-      - 9864:9864
     networks:
      - bds-network
     environment:
       SERVICE_PRECONDITION: "hadoop-namenode:9870"
     env_file:
       - ./hadoop/hadoop.env
-
+  
   hadoop-resourcemanager:
     container_name: hadoop-resourcemanager
     restart: always
     build: ./hadoop/resourcemanager
-    ports:
-      - 8088:8088
     networks:
      - bds-network
     environment:
@@ -48,24 +44,22 @@
     container_name: hadoop-nodemanager-1
     restart: always
     build: ./hadoop/nodemanager
-    ports:
-      - 8042:8042
     networks:
      - bds-network
     environment:
-      SERVICE_PRECONDITION: "hadoop-namenode:9000 hadoop-namenode:9870 hadoop-datanode:9864 hadoop-resourcemanager:8088"    env_file:
+      SERVICE_PRECONDITION: "hadoop-namenode:9000 hadoop-namenode:9870 hadoop-datanode:9864 hadoop-resourcemanager:8088"
+    env_file:
       - ./hadoop/hadoop.env
 
   hadoop-historyserver:
     container_name: hadoop-historyserver
     restart: always
     build: ./hadoop/historyserver
-    ports:
-      - 8188:8188
     networks:
      - bds-network
     environment:
-      SERVICE_PRECONDITION: "hadoop-namenode:9000 hadoop-namenode:9870 hadoop-datanode:9864 hadoop-resourcemanager:8088"    volumes:
+      SERVICE_PRECONDITION: "hadoop-namenode:9000 hadoop-namenode:9870 hadoop-datanode:9864 hadoop-resourcemanager:8088"
+    volumes:
       - hadoop_historyserver:/hadoop/yarn/timeline
     env_file:
       - ./hadoop/hadoop.env
@@ -112,6 +106,45 @@
     depends_on:
       - spark-master
 
+  zookeeper:
+    image: 'wurstmeister/zookeeper'
+    hostname: 'zookeeper'
+    networks:
+      - bds-network
+    container_name: 'zookeeper'
+    ports:
+      - '2181:2181'
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  kafka:
+    image: 'confluentinc/cp-kafka:7.3.2'
+    hostname: 'kafka'
+    container_name: 'kafka'
+    networks:
+      - bds-network
+    ports:
+      - '9092:9092'
+      - '19092:19092'
+      - '29092:29092'
+    depends_on:
+      - 'zookeeper'
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: 'INTERNAL://kafka:29092,EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9092,DOCKER://host.docker.internal:19092'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,DOCKER:PLAINTEXT'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'INTERNAL'
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_BROKER_ID: 1
+      KAFKA_LOG4J_LOGGERS: 'kafka.controller=DEBUG,kafka.producer.async.DefaultEventHandler=DEBUG,state.change.logger=DEBUG'
+      KAFKA_AUTHORIZER_CLASS_NAME: 'kafka.security.authorizer.AclAuthorizer'
+      KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: 'true'
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+    depends_on:
+      - 'zookeeper'
+  
   ####### JUPYTER
   jupyter-notebook:
     build: ./jupyter
