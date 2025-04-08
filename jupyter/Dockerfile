@@ -24,7 +24,7 @@ CMD ["bash"]
 ARG build_date
 ARG spark_version="3.5.5"
 ARG scala_version="2.13.16"
-ARG jupyterlab_version="4.3.0"
+ARG jupyterlab_version="4.4.0"
 ARG scala_kernel_version="0.14.1"
 
 #JupyterLab + Python kernel for PySpark
@@ -34,8 +34,7 @@ RUN apt-get update -y
 RUN apt-get install -y python3-pip python3-dev
 RUN pip3 install --upgrade pip
 RUN pip3 install wget==3.2 pyspark==${spark_version} jupyterlab==${jupyterlab_version}
-RUN pip3 install catboost numpy pandas lightgbm matplotlib optuna pycaret plotly scipy
-RUN pip3 install seaborn scikit-learn statsmodels nltk
+RUN pip3 install catboost numpy pandas lightgbm matplotlib tensorflow-cpu optuna pycaret plotly scipy seaborn scikit-learn statsmodels nltk
 
 #Scala kernel for Spark
 RUN apt-get install -y ca-certificates-java --no-install-recommends
