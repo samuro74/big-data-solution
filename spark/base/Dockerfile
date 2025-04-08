@@ -1,4 +1,4 @@
-ARG debian_buster_image_tag=11.0.11-jre-slim
+ARG debian_buster_image_tag=11-jre-slim
 FROM openjdk:${debian_buster_image_tag}
 
 ARG scala_version="2.13.16"
